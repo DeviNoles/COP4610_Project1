@@ -18,7 +18,6 @@ char *expand_argument(char *token);
 
 typedef struct _string_list {
   char* value;
-  int length;
   struct _string_list* next;
 } string_list;
 
@@ -40,5 +39,7 @@ typedef struct _execution_list {
 execution_list* build_execution_list(char** expanded_tokens, int size);
 void print_execution_list(execution_list* exec_list);
 void free_execution_list(execution_list* exec_list);
+
+void execute_list_node(execution_list** current_node_ptr, execution_list** last_node_ptr);
 
 #endif

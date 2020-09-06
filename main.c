@@ -37,6 +37,17 @@ int main() {
     execution_list* exec_list = build_execution_list(expanded_tokens, tokens->size);
     print_execution_list(exec_list);
 
+    // Just loop through each one, keeping track of the previous item, to know where stdin
+    // and out are coming from.
+    execution_list* last_node = NULL;
+    while (exec_list) {
+      // There are four cases here. Basically, you need to look at last_node to see where
+      // input for the current process/file comes from.
+      // TODO: If the PROCESS is a builtin, we should call the appropriate function here.
+      // Otherwise, it's an external command. Look up the program in the $PATH, and then call execve.
+      execute_list_node(&exec_list, &last_node);
+    }
+
     // TODO: Cleanup execution list, etc.
     free_execution_list(exec_list);
     free(input);
