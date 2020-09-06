@@ -15,7 +15,7 @@
 // TODO: Maybe give a warning if the program is not a file (i.e. it's a
 // directory)
 // TODO: Should we resolve symlinks?
-char *lookup_executable(char *command) {
+char *lookup_executable(char *command, char* PATH) {
   char *path = getenv("PATH");
   if (!path) {
    printf("NOT GETTING PATH\n");
