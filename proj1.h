@@ -36,8 +36,8 @@ execution_list *build_execution_list(char **expanded_tokens, int size);
 void print_execution_list(execution_list *exec_list);
 void free_execution_list(execution_list *exec_list);
 
-void execute_list_node(execution_list *current_node, execution_list *last_node);
+void execute_list_node(execution_list *current_node, execution_list *last_node, char* PATH);
 
-char *lookup_executable(char *command);
+char *lookup_executable(char *command, char* PATH);
 
 #endif

@@ -5,6 +5,7 @@
 #include "proj1.h"
 
 char *expand_argument(char *token) {
+  return token;
   printf("CALLING EXPAND ARGUMENT");
   if (token[0] == '$') {
     token++;

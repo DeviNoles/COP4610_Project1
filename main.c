@@ -6,6 +6,8 @@
 
 int main() {
   while (1) {
+    char* PATH = getenv("PATH");
+
     printf("%s@%s: %s > ", getenv("USER"), getenv("MACHINE"), getenv("PWD"));
 
     /* input contains the whole command
@@ -47,7 +49,7 @@ int main() {
       // TODO: If the PROCESS is a builtin, we should call the appropriate
       // function here. Otherwise, it's an external command. Look up the program
       // in the $PATH, and then call execve.
-      execute_list_node(exec_list, last_node);
+      execute_list_node(exec_list, last_node, PATH);
       last_node = exec_list;
       exec_list = exec_list->next;
     }
