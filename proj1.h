@@ -42,4 +42,6 @@ void free_execution_list(execution_list* exec_list);
 
 void execute_list_node(execution_list** current_node_ptr, execution_list** last_node_ptr);
 
+char* lookup_executable(char* command);
+
 #endif
