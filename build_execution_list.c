@@ -8,6 +8,7 @@ execution_list* build_execution_list(char** expanded_tokens, int size) {
   execution_list* first_node = node;
   node->type = EXEC_LIST_PROCESS;
   node->next = NULL;
+  node->command_and_args = create_string_list();
 
   for (int i = 0; i < size; i++) {
     char* token = expanded_tokens[i];
@@ -19,6 +20,7 @@ execution_list* build_execution_list(char** expanded_tokens, int size) {
 	  (execution_list*)malloc(sizeof(execution_list));
       new_node->type = EXEC_LIST_PROCESS;
       new_node->next = NULL;
+      new_node->command_and_args = create_string_list();
       node->next = new_node;
       node = new_node;
     } else if (!strcmp(token, ">")) {
@@ -32,9 +34,9 @@ execution_list* build_execution_list(char** expanded_tokens, int size) {
       // If the current node is a file, then set the filename.
       // Otherwise, add the argument to the command list.
       if (node->type == EXEC_LIST_FILE) {
-				node->filename = strdup(token);
+	node->filename = strdup(token);
       } else {
-				// TODO: string list append
+	string_list_add(node->command_and_args, token);
       }
     }
   }
@@ -47,9 +49,9 @@ void print_execution_list(execution_list* exec_list) {
   if (exec_list->type == EXEC_LIST_FILE) {
     printf("Exec list file: %s\n", exec_list->filename);
   } else {
-    // TODO: Print string list
-    printf("Exec list process\n");
-    // TODO: Print full command
+    printf("Exec list process: ");
+		print_string_list(exec_list->command_and_args);
+		printf("\n");
   }
   print_execution_list(exec_list->next);
 }
