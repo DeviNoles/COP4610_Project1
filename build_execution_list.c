@@ -35,3 +35,21 @@ execution_list* build_execution_list(char** expanded_tokens, int size) {
 
   return first_node;
 }
+
+void print_execution_list(execution_list* exec_list) {
+  if (!exec_list) return;
+  print_execution_list(exec_list->next);
+  if (exec_list->type == EXEC_LIST_FILE) {
+    printf("Exec list file: %s\n", exec_list->filename);
+  } else {
+    // TODO: Print string list
+    printf("Exec list process\n");
+    // TODO: Print full command
+  }
+}
+
+void free_execution_list(execution_list* exec_list) {
+  if (!exec_list) return;
+  free_execution_list(exec_list->next);
+  // TODO: Actually delete the things allocated here
+}
