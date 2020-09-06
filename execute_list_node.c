@@ -1,5 +1,5 @@
 #include <stdlib.h>
-
+#include <unistd.h>
 #include "proj1.h"
 
 void execute_list_node(execution_list *current_node,
@@ -27,5 +27,22 @@ void execute_list_node(execution_list *current_node,
     // TODO: If lookup_executable returns NULL, report an error instead
     // of starting a process.
     char *exec_path = lookup_executable(argv[0]);
+    if (!exec_path) {
+        printf("Command does not exist.\n");
+    } else {
+        pid_t child_pid = fork();
+        if (child_pid == 0) {
+            //we are in the child process
+            execv(exec_path,argv);
+            printf("bruh moment.\n");
+        } else {
+            pid_t temp;
+            do {
+                temp = wait(NULL);
+                if(temp != child_pid) break;
+            } while(temp != child_pid);
+            printf("It's died.\n");
+        }
+    }
   }
 }
