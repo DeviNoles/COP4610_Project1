@@ -10,43 +10,63 @@
 
 #include "proj1.h"
 
+// TODO: If there is a tilde in a path, you must expand that first
+// TODO: Maybe give a warning if the program is not a file (i.e. it's a
+// directory)
+// TODO: Should we resolve symlinks?
 char *lookup_executable(char *command) {
   char *path = getenv("PATH");
   if (!path)
     return command;
-	printf("Looup command %s\n", command);
 
   // Split the PATH by :
-  char *directory_path = strtok(path, ":");
+  char *saveptr;
+  char *directory_path = strtok_r(path, ":", &saveptr);
 
   while (directory_path) {
     // List the directory to try to find a file.
     DIR *dir;
     dir = opendir(directory_path);
 
-    if (!dir)
+    if (!dir) {
+      directory_path = strtok_r(path, ":", &saveptr);
       continue; // Dir does not exist
-		printf("In dir %s\n", directory_path);
+    }
 
     struct dirent *entry;
     while ((entry = readdir(dir)) != NULL) {
       // Read file info, make sure it is a file, and then return
       // the absolute path.
-			// printf("Entry: %s\n", entry->d_name);
+      // printf("Entry: %s\n", entry->d_name);
 
       if (!strcmp(entry->d_name, command)) {
         if (entry->d_type == DT_REG) {
           // It's a file, return it.
-          printf("Found command %s as file %s in dir %s\n", command,
-                 entry->d_name, directory_path);
-          return command;
+          // Use realpath to find the absolute path of the directory.
+          // Then, concat it with the command to get the absolute file path.
+          char realpath_buf[PATH_MAX];
+          char *abs = realpath(directory_path, realpath_buf);
+          if (abs) {
+            // Concat
+						int length_of_abs = strlen(abs);
+						int length = length_of_abs + 1 + strlen(entry->d_name);
+						char *abs_exec_path = (char*)malloc(length);
+						strcpy(abs_exec_path, abs);
+						strcpy(&abs_exec_path[length_of_abs + 1], entry->d_name);
+						abs_exec_path[length_of_abs] = '/';
+						abs_exec_path[length] = '\0';
+						printf("FINAL: %s\n", abs_exec_path);
+						return abs_exec_path;
+          } else {
+            return NULL;
+          }
         }
       }
     }
-		printf("Done a\n");
 
-    directory_path = strtok(path, ":");
+    directory_path = strtok_r(NULL, ":", &saveptr);
   }
 
   // If we didn't find it, just return NULL.
+  return NULL;
 }
