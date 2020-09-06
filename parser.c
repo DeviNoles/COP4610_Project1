@@ -38,7 +38,8 @@ char *get_input(void) {
     memcpy(&buffer[bufsize], line, addby);
     bufsize += addby;
 
-    if (newln != NULL) break;
+    if (newln != NULL)
+      break;
   }
 
   buffer = (char *)realloc(buffer, bufsize + 1);
@@ -65,7 +66,8 @@ tokenlist *get_tokens(char *input) {
 }
 
 void free_tokens(tokenlist *tokens) {
-  for (int i = 0; i < tokens->size; i++) free(tokens->items[i]);
+  for (int i = 0; i < tokens->size; i++)
+    free(tokens->items[i]);
 
   free(tokens);
 }
