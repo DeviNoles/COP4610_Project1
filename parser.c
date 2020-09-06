@@ -13,6 +13,7 @@ tokenlist *get_tokens(char *input);
 tokenlist *new_tokenlist(void);
 void add_token(tokenlist *tokens, char *item);
 void free_tokens(tokenlist *tokens);
+char* expand_argument(char* token);
 
 int main()
 {
@@ -30,57 +31,8 @@ int main()
 		char *fullCommand = "";
 		for (int i = 0; i < tokens->size; i++) {
 
-			//printf("token %d: (%s)\n", i, tokens->items[i]);
-			if(tokens->items[i][0]=='$'){
-				tokens->items[i]++;
-				printf("COMMAND : %s\n", getenv(tokens->items[i]));
-					tokens->items[i]--;//gives memory error if don't do this has to do with size
-			}
-			else if(tokens->items[i][0]=='~'){
-				tokens->items[i]++;
-				char *fullPath = (char *) malloc(strlen(getenv("HOME")) + strlen(tokens->items[i]) + 1);
-				strcpy(fullPath,getenv("HOME"));
-				strcat(fullPath,"/");
-	   		strcat(fullPath,tokens->items[i]);
-				printf("%s\n", fullPath);
-				tokens->items[i]--; //gives memory error if don't do this has to do with size
-				free(fullPath);
-			}
-
-			else if(tokens->items[i][0]=='-'){
-				char *tempHolder = (char *) malloc(1 + strlen(fullCommand) + strlen(tokens->items[i]) );
-				char *holder = (char *) malloc(1 + strlen(fullCommand));
-				strcpy(holder, fullCommand);
-				strcpy(tempHolder, holder);
-
-				strcat(tempHolder, tokens->items[i]);
-				fullCommand = tempHolder;
-				printf("FULL COMMAND");
-			}
-
-			else{
-
-						char delim[] = ":";
-						char *pathString = getenv("PATH");
-						printf("%s\n", getenv("PATH"));
-						char *ptr = strtok(pathString , delim);
-
-	while(ptr != NULL)
-	{
-		printf("'%s'\n", ptr);
-		ptr = strtok(NULL, delim);
-	}
-
-
-
-
-
-
-
-//free(tempHolder);
-
-
-					}
+			printf("token %d: (%s)\n", i, tokens->items[i]);
+			expand_argument(tokens->items[i]);
 			}
 
 
@@ -99,7 +51,60 @@ tokenlist *new_tokenlist(void)
 	tokens->items = NULL;
 	return tokens;
 }
+char* expand_argument(char* token){
+	printf("CALLING EXPAND ARGUMENT");
+	if(token[0]=='$'){
+		token++;
+		char *pathString = (char *) malloc(strlen(getenv(token)) + strlen(token) + 1);
+		strcpy(pathString,getenv(token));
+		printf("%s\n", pathString);
+		printf("COMMAND : %s\n", getenv(token));
+	}
+	else if(token[0]=='~'){
+		char *fullPath = (char *) malloc(strlen(getenv("HOME")) + strlen(token) + 1);
+		strcpy(fullPath,getenv("HOME"));
+		strcat(fullPath,"/");
+		strcat(fullPath,token);
+		printf("%s\n", fullPath);
+		return fullPath;
+		free(fullPath);
+	}
+/* -arguments
+	else if(token[0]=='-'){
+		char *tempHolder = (char *) malloc(1 + strlen(fullCommand) + strlen(token) );
+		char *holder = (char *) malloc(1 + strlen(fullCommand));
+		strcpy(holder, fullCommand);
+		strcpy(tempHolder, holder);
 
+		strcat(tempHolder, token);
+		fullCommand = tempHolder;
+		printf("FULL COMMAND");
+	}*/
+
+	else{
+
+				char delim[] = ":";
+				char *pathString = (char *) malloc(strlen(getenv("PATH")) + strlen(token) + 1);
+				strcpy(pathString,getenv("PATH"));
+				printf("%s\n", pathString);
+				char *ptr = strtok(pathString , delim);
+
+while(ptr != NULL)
+{
+printf("'%s'\n", ptr);
+ptr = strtok(NULL, delim);
+}
+
+
+
+
+
+//free(tempHolder);
+return token;
+
+			}
+
+}
 void add_token(tokenlist *tokens, char *item)
 {
 	int i = tokens->size;
