@@ -1,5 +1,5 @@
 headers = proj1.h
-objects = main.o parser.o
+objects = main.o parser.o expand_argument.o
 
 proj1: $(objects)
 	$(CC) -o $@ $^
