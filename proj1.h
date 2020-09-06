@@ -27,7 +27,7 @@ void print_string_list(string_list *list);
 typedef struct _execution_list {
   string_list *command_and_args;
   char *filename;
-  FILE *input, *output;
+  int fds[2];
   enum { EXEC_LIST_FILE, EXEC_LIST_PROCESS } type;
   struct _execution_list *next;
 } execution_list;
