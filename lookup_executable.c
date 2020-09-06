@@ -15,21 +15,18 @@
 // TODO: Maybe give a warning if the program is not a file (i.e. it's a
 // directory)
 // TODO: Should we resolve symlinks?
-char *lookup_executable(char *command, char* PATH) {
-  char* path = strdup(PATH);
+char *lookup_executable(char *command) {
+  char *path = getenv("PATH");
   if (!path) {
-    printf("NOT GETTING PATH\n");
-    return command;
-  } else {
-    printf("Path is %s\n", path);
-  }
+   printf("NOT GETTING PATH\n");
+   return command;
+ } else {
+   printf("Path is %s\n", path);
+ }
 
   // Split the PATH by :
   char *saveptr;
   char *directory_path = strtok_r(path, ":", &saveptr);
-  if (!directory_path) {
-    printf("dirp is null\n");
-  }
 
   while (directory_path) {
     // List the directory to try to find a file.

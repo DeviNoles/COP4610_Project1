@@ -5,7 +5,6 @@
 #include "proj1.h"
 
 char *expand_argument(char *token) {
-  return token;
   printf("CALLING EXPAND ARGUMENT");
   if (token[0] == '$') {
     token++;
@@ -14,6 +13,7 @@ char *expand_argument(char *token) {
     strcpy(pathString, getenv(token));
     printf("%s\n", pathString);
     printf("COMMAND : %s\n", getenv(token));
+    return(getenv(token));
   } else if (token[0] == '~') {
     char *fullPath = (char *)malloc(strlen(getenv("HOME")) + strlen(token) + 1);
     strcpy(fullPath, getenv("HOME"));
@@ -40,7 +40,7 @@ char *expand_argument(char *token) {
     char *pathString =
         (char *)malloc(strlen(getenv("PATH")) + strlen(token) + 1);
     strcpy(pathString, getenv("PATH"));
-    printf("%s\n", pathString);
+    printf("PATH IS: %s\n", pathString);
     char *ptr = strtok(pathString, delim);
 
     while (ptr != NULL) {
@@ -52,4 +52,3 @@ char *expand_argument(char *token) {
     return token;
   }
 }
-
