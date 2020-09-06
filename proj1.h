@@ -16,6 +16,15 @@ void free_tokens(tokenlist *tokens);
 char *expand_argument(char *token);
 
 
+typedef struct _string_list {
+  char* value;
+  int length;
+  struct _string_list* next;
+} string_list;
+
+string_list* create_string_list();
+void string_list_add(string_list* list, char* str);
+
 typedef struct _execution_list {
   char** command_and_args;
   char* filename;

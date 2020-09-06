@@ -29,7 +29,13 @@ execution_list* build_execution_list(char** expanded_tokens, int size) {
       node->next = new_node;
       node = new_node;
     } else {
-      // TODO: string list append
+      // If the current node is a file, then set the filename.
+      // Otherwise, add the argument to the command list.
+      if (node->type == EXEC_LIST_FILE) {
+				node->filename = strdup(token);
+      } else {
+				// TODO: string list append
+      }
     }
   }
 
@@ -38,7 +44,6 @@ execution_list* build_execution_list(char** expanded_tokens, int size) {
 
 void print_execution_list(execution_list* exec_list) {
   if (!exec_list) return;
-  print_execution_list(exec_list->next);
   if (exec_list->type == EXEC_LIST_FILE) {
     printf("Exec list file: %s\n", exec_list->filename);
   } else {
@@ -46,6 +51,7 @@ void print_execution_list(execution_list* exec_list) {
     printf("Exec list process\n");
     // TODO: Print full command
   }
+  print_execution_list(exec_list->next);
 }
 
 void free_execution_list(execution_list* exec_list) {
