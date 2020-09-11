@@ -1,6 +1,7 @@
 #ifndef PROJ1_H
 #define PROJ1_H
 #include <stdio.h>
+#include <unistd.h>
 
 typedef struct {
   int size;
@@ -29,6 +30,7 @@ typedef struct _execution_list {
   char *filename;
   int fds[2];
   enum { EXEC_LIST_FILE, EXEC_LIST_PROCESS } type;
+  pid_t pid;
   struct _execution_list *next;
 } execution_list;
 
@@ -39,5 +41,9 @@ void free_execution_list(execution_list *exec_list);
 void execute_list_node(execution_list *current_node, execution_list *last_node, char* PATH);
 
 char *lookup_executable(char *command, char* PATH);
+
+void pipe_stdout_into_stdin(pid_t from, pid_t to);
+
+void pipe_file_into_stdin(const char* filename, pid_t pid);
 
 #endif

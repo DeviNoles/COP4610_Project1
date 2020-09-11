@@ -3,8 +3,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-void execute_list_node(execution_list *current_node,
-                       execution_list *last_node, char* PATH) {
+void execute_list_node(execution_list *current_node, execution_list *last_node,
+                       char *PATH) {
   // Do work depending on which the nodes are
   if (current_node->type == EXEC_LIST_PROCESS || 1) {
     string_list *current = current_node->command_and_args;
@@ -34,25 +34,20 @@ void execute_list_node(execution_list *current_node,
       pid_t child_pid = fork();
       if (child_pid == 0) {
         // we are in the child process
-        printf("TESTTTTTT\n");
-        current_node->fds[0] = STDIN_FILENO;
-        current_node->fds[1] = STDOUT_FILENO;
-        pipe(current_node->fds);
-        if (last_node && last_node->type == EXEC_LIST_PROCESS) {
-            dup2(last_node->fds[0], STDIN_FILENO);
-            close(last_node->fds[0]); // we have a copy already, so close it
-            close(last_node->fds[1]); // not using this end
-            dup2(current_node->fds[1], STDOUT_FILENO);
-            close(current_node->fds[0]); // not using this end
-            close(current_node->fds[1]); // we have a copy already, so close it
-        }
-        printf("barack obunga\n");
         execv(exec_path, argv);
         printf("bruh moment.\n");
       } else {
+        // We are in the parent process
         pid_t temp;
+        current_node->pid = child_pid;
+        if (last_node) {
+          if (last_node->type == EXEC_LIST_PROCESS) {
+            pipe_stdout_into_stdin(last_node->pid, child_pid);
+          } else if (last_node->type == EXEC_LIST_FILE) {
+            pipe_file_into_stdin(last_node->filename, child_pid);
+          }
+        }
         do {
-            printf("POOPY\n");
           temp = wait(NULL);
           if (temp != child_pid)
             break;
@@ -60,8 +55,5 @@ void execute_list_node(execution_list *current_node,
         printf("It's died.\n");
       }
     }
-  }
-  else {
-      printf("aGOOGOO GAGA\n");
   }
 }
