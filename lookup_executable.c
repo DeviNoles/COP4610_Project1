@@ -1,13 +1,13 @@
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <limits.h>
 
 #include "proj1.h"
 
@@ -15,14 +15,14 @@
 // TODO: Maybe give a warning if the program is not a file (i.e. it's a
 // directory)
 // TODO: Should we resolve symlinks?
-char *lookup_executable(char *command, char* PATH) {
-  char *path = getenv("PATH");
+char *lookup_executable(char *command, char *PATH) {
+  char *path = strdup(PATH);
   if (!path) {
-   printf("NOT GETTING PATH\n");
-   return command;
- } else {
-   printf("Path is %s\n", path);
- }
+    printf("NOT GETTING PATH\n");
+    return command;
+  } else {
+    printf("Path is %s\n", path);
+  }
 
   // Split the PATH by :
   char *saveptr;
@@ -53,15 +53,15 @@ char *lookup_executable(char *command, char* PATH) {
           char *abs = realpath(directory_path, realpath_buf);
           if (abs) {
             // Concat
-						int length_of_abs = strlen(abs);
-						int length = length_of_abs + 1 + strlen(entry->d_name);
-						char *abs_exec_path = (char*)malloc(length);
-						strcpy(abs_exec_path, abs);
-						strcpy(&abs_exec_path[length_of_abs + 1], entry->d_name);
-						abs_exec_path[length_of_abs] = '/';
-						abs_exec_path[length] = '\0';
-						printf("FINAL: %s\n", abs_exec_path);
-						return abs_exec_path;
+            int length_of_abs = strlen(abs);
+            int length = length_of_abs + 1 + strlen(entry->d_name);
+            char *abs_exec_path = (char *)malloc(length);
+            strcpy(abs_exec_path, abs);
+            strcpy(&abs_exec_path[length_of_abs + 1], entry->d_name);
+            abs_exec_path[length_of_abs] = '/';
+            abs_exec_path[length] = '\0';
+            printf("FINAL: %s\n", abs_exec_path);
+            return abs_exec_path;
           } else {
             return NULL;
           }

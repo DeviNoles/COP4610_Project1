@@ -8,4 +8,4 @@ shell: $(objects)
 	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
-	rm -f *.o shell
+	rm -f $(objects) shell
