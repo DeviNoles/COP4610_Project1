@@ -15,13 +15,15 @@ char *expand_argument(char *token) {
     // printf("COMMAND : %s\n", getenv(token));
     return(getenv(token));
   } else if (token[0] == '~') {
-    char *fullPath = (char *)malloc(strlen(getenv("HOME")) + strlen(token) + 1);
+    int length = strlen(getenv("HOME")) + strlen(token)+1;
+    char *fullPath = (char *)malloc(length);
     strcpy(fullPath, getenv("HOME"));
     strcat(fullPath, "/");
-    strcat(fullPath, token);
+    if (strlen(token) > 1)
+      strcat(fullPath, &token[1]);
+    fullPath[length-1] = 0;
     // printf("%s\n", fullPath);
     return fullPath;
-    free(fullPath);
   }
   /* -arguments
           else if(token[0]=='-'){
