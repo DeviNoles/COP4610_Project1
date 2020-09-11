@@ -9,6 +9,7 @@ void internal_echo(execution_list *node) {
     if(firstNum==1){
       printf("%s", node->command_and_args);
     }
+    firstNum=1;
     node->command_and_args = node->command_and_args->next;
   }
 }
