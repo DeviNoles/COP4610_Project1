@@ -18,12 +18,8 @@
 char *lookup_executable(char *command, char *PATH) {
   char *path = strdup(PATH);
   if (!path) {
-    printf("NOT GETTING PATH\n");
     return command;
-  } else {
-    printf("Path is %s\n", path);
-  }
-
+  } 
   // Split the PATH by :
   char *saveptr;
   char *directory_path = strtok_r(path, ":", &saveptr);
@@ -60,7 +56,7 @@ char *lookup_executable(char *command, char *PATH) {
             strcpy(&abs_exec_path[length_of_abs + 1], entry->d_name);
             abs_exec_path[length_of_abs] = '/';
             abs_exec_path[length] = '\0';
-            printf("FINAL: %s\n", abs_exec_path);
+            // printf("FINAL: %s\n", abs_exec_path);
             return abs_exec_path;
           } else {
             return NULL;

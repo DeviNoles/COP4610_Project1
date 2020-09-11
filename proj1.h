@@ -38,12 +38,25 @@ execution_list *build_execution_list(char **expanded_tokens, int size);
 void print_execution_list(execution_list *exec_list);
 void free_execution_list(execution_list *exec_list);
 
-void execute_list_node(execution_list *current_node, execution_list *last_node, char* PATH);
+void execute_list_node(execution_list *current_node, execution_list *last_node,
+                       char *PATH);
 
-char *lookup_executable(char *command, char* PATH);
+char *lookup_executable(char *command, char *PATH);
 
-void pipe_stdout_into_stdin(pid_t from, pid_t to);
+void pipe_stdout_into_stdin(int *from, int *to);
 
-void pipe_file_into_stdin(const char* filename, pid_t pid);
+void pipe_file_into_stdin(const char *filename, int *pid);
+
+/**
+ * By the end of this function:
+ * Any output from the command should be written to fds[1].
+ * Don't use printf, use fprintf(node->fds[1], ...);
+ */
+void execute_internal_command(const char *command, execution_list *node);
+
+void internal_cd(execution_list *node);
+void internal_echo(execution_list *node);
+void internal_jobs(execution_list *node);
+void internal_exit(execution_list *node);
 
 #endif
