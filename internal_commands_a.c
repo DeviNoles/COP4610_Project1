@@ -1,6 +1,7 @@
 #include "proj1.h"
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 void internal_cd(execution_list *node) {
@@ -36,6 +37,15 @@ void internal_echo(execution_list *node) {
 
 void internal_exit(execution_list *node) {
   // TODO: Wait for jobs
+  execution_list *job = background_jobs;
+  while (job) {
+    int status;
+    waitpid(job->pid, &status, 0);
+    job = job->next;
+  }
+
+  // Release all job memory
+  free_execution_list(background_jobs);
 
   // If the user provided an exit code, use that. Otherwise, default to 0.
   int exit_code = 0;
@@ -43,16 +53,4 @@ void internal_exit(execution_list *node) {
     exit_code = atoi(node->command_and_args->next->value);
   }
   exit(exit_code);
-
-  // wait for global list to exit
-  // pid_t waitpid(pidlist, int *status, int options);
-  // Option is 0 since I check it later
-  /*might need this
-   if (WIFSIGNALED(status)){
-       printf("Error\n");
-   }
-   else if (WEXITSTATUS(status)){
-       printf("Exited Normally\n");
-   }
-  //To Here and see the difference*/
 }
