@@ -32,3 +32,13 @@ void print_string_list(string_list *list) {
     print_string_list(list->next);
   }
 }
+
+void free_string_list(string_list *list){
+string_list* holder;
+ while (list != NULL)
+  {
+    holder = list->next;
+     free(list);
+     list = holder;
+  }
+}

@@ -24,6 +24,7 @@ typedef struct _string_list {
 string_list *create_string_list();
 void string_list_add(string_list *list, char *str);
 void print_string_list(string_list *list);
+void free_string_list(string_list *list);
 
 typedef struct _execution_list {
   string_list *command_and_args;
