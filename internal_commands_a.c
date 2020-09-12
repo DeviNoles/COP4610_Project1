@@ -35,15 +35,24 @@ void internal_echo(execution_list *node) {
 }
 
 void internal_exit(execution_list *node) {
-  //wait for global list to exit
-  //pid_t waitpid(pidlist, int *status, int options);
-  //Option is 0 since I check it later
-/*might need this
- if (WIFSIGNALED(status)){
-     printf("Error\n");
- }
- else if (WEXITSTATUS(status)){
-     printf("Exited Normally\n");
- }
-//To Here and see the difference*/
+  // TODO: Wait for jobs
+
+  // If the user provided an exit code, use that. Otherwise, default to 0.
+  int exit_code = 0;
+  if (node->command_and_args->next) {
+    exit_code = atoi(node->command_and_args->next->value);
+  }
+  exit(exit_code);
+
+  // wait for global list to exit
+  // pid_t waitpid(pidlist, int *status, int options);
+  // Option is 0 since I check it later
+  /*might need this
+   if (WIFSIGNALED(status)){
+       printf("Error\n");
+   }
+   else if (WEXITSTATUS(status)){
+       printf("Exited Normally\n");
+   }
+  //To Here and see the difference*/
 }
