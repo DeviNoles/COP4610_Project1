@@ -79,5 +79,12 @@ void free_execution_list(execution_list *exec_list) {
   if (!exec_list)
     return;
   free_execution_list(exec_list->next);
-  // TODO: Actually delete the things allocated here
+  if (exec_list->type == EXEC_LIST_PROCESS) {
+    close(exec_list->stdout_pipe[0]);
+    close(exec_list->stdout_pipe[1]);
+    free_string_list(exec_list->command_and_args);
+  }
+  else
+    free(exec_list->filename);
+  free(exec_list);
 }
