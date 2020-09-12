@@ -61,8 +61,6 @@ int main() {
       // TODO: If the PROCESS is a builtin, we should call the appropriate
       // function here. Otherwise, it's an external command. Look up the program
       // in the $PATH, and then call execve.
-      printf("exec_list=%p\n", exec_list);
-      printf("last_node=%p\n", last_node);
       execute_list_node(exec_list, last_node, PATH, term_fds);
 
       // Track the final PID.

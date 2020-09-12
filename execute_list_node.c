@@ -2,6 +2,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 void setup_pipes(execution_list *current_node, execution_list *last_node,
@@ -118,7 +119,12 @@ void setup_pipes(execution_list *current_node, execution_list *last_node,
       close(current_node->stdout_pipe[1]);
       // Write to stdout
     } else if (current_node->next->type == EXEC_LIST_FILE) {
+      // Check if the file existed, so that if it did not, we give it 664.
+      int exists = access(current_node->next->filename, F_OK) != -1;
       int fd = open(current_node->next->filename, O_WRONLY | O_CREAT);
+      if (!exists) {
+        chmod(current_node->next->filename, 0664);
+      }
       dup2(fd, STDOUT_FILENO);
       close(fd);
     }
