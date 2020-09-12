@@ -6,6 +6,8 @@
 
 #include "proj1.h"
 
+execution_list* background_jobs;
+
 int main() {
   // Init background jobs
   int job_count = 0;
