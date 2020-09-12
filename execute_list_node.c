@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+extern execution_list* background_jobs;
+
 void setup_pipes(execution_list *current_node, execution_list *last_node,
                  int *term_fds);
 
@@ -84,6 +86,8 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
 
           // Execute external commands
           execv(exec_path, argv);
+        } else {
+          current_node->pid = child_pid;
         }
       }
     }

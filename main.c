@@ -8,6 +8,7 @@
 
 int main() {
   // Init background jobs
+  int job_count = 0;
   background_jobs = NULL;
 
   // Create a pipe for stdin and stdout.
@@ -78,6 +79,7 @@ int main() {
           execution_list *new_node =
               (execution_list *)malloc(sizeof(execution_list));
           *new_node = *exec_list;
+          new_node->job_id = (job_count++) + 1;
 
           if (!background_jobs) {
             background_jobs = new_node;
@@ -88,6 +90,10 @@ int main() {
             }
             cur->next = new_node;
           }
+
+          // Print background task
+          // [Job number] [CMD’s PID]
+          printf("[%d] %ld\n", new_node->job_id, (long)exec_list->pid);
         }
       }
 

@@ -35,9 +35,10 @@ typedef struct _execution_list {
   struct _execution_list *next;
   int is_background;
   int is_inverted_redirect;
+  int job_id;
 } execution_list;
 
-execution_list* background_jobs;
+extern execution_list* background_jobs;
 
 execution_list *build_execution_list(char **expanded_tokens, int size);
 void print_execution_list(execution_list *exec_list);
