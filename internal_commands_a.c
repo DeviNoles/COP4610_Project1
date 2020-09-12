@@ -34,4 +34,16 @@ void internal_echo(execution_list *node) {
   dprintf(fd, "\n");
 }
 
-void internal_exit(execution_list *node) {}
+void internal_exit(execution_list *node) {
+  //wait for global list to exit
+  //pid_t waitpid(pidlist, int *status, int options);
+  //Option is 0 since I check it later
+/*might need this
+ if (WIFSIGNALED(status)){
+     printf("Error\n");
+ }
+ else if (WEXITSTATUS(status)){
+     printf("Exited Normally\n");
+ }
+//To Here and see the difference*/
+}
