@@ -2,6 +2,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 void setup_pipes(execution_list *current_node, execution_list *last_node,
@@ -15,7 +16,7 @@ int is_internal_command(const char *command) {
 void execute_list_node(execution_list *current_node, execution_list *last_node,
                        char *PATH, int *term_fds) {
   // Do work depending on which the nodes are
-  if (current_node->type == EXEC_LIST_PROCESS || 1) {
+  if (current_node->type == EXEC_LIST_PROCESS) {
     string_list *current = current_node->command_and_args;
     // count the length of the string_list
     int len = 0;
@@ -118,9 +119,21 @@ void setup_pipes(execution_list *current_node, execution_list *last_node,
       close(current_node->stdout_pipe[1]);
       // Write to stdout
     } else if (current_node->next->type == EXEC_LIST_FILE) {
-      int fd = open(current_node->next->filename, O_WRONLY | O_CREAT);
-      dup2(fd, STDOUT_FILENO);
-      close(fd);
+      // If it's inverted, then use it as stdin
+      if (current_node->next->is_inverted_redirect) {
+        // Check if the file existed, so that if it did not, we give it 664.
+        int exists = access(current_node->next->filename, F_OK) != -1;
+        int fd = open(current_node->next->filename, O_WRONLY | O_CREAT);
+        if (!exists) {
+          chmod(current_node->next->filename, 0664);
+        }
+        dup2(fd, STDOUT_FILENO);
+        close(fd);
+      } else {
+        int fd = open(current_node->next->filename, O_RDONLY);
+        dup2(fd, STDIN_FILENO);
+        close(fd);
+      }
     }
   } else {
     // If there is no next node, then pipe to the terminal.
