@@ -17,9 +17,11 @@ int main() {
   close(term_fds[1]);
 
   while (1) {
-    char* PATH = getenv("PATH");
-    char* cwd;
-    printf("%s@%s: %s > ", getenv("USER"), getenv("MACHINE"), getcwd(cwd,_PC_PATH_MAX));
+    char *PATH = getenv("PATH");
+    // char* cwd =- getenv("PWD");
+    char cwd[_PC_PATH_MAX];
+    printf("%s@%s: %s > ", getenv("USER"), getenv("MACHINE"),
+           getcwd(cwd, _PC_PATH_MAX));
 
     /* input contains the whole command
      * tokens contains substrings from input split by spaces
@@ -35,7 +37,7 @@ int main() {
     char **expanded_tokens = (char **)malloc(sizeof(char *) * tokens->size);
 
     for (int i = 0; i < tokens->size; i++) {
-      printf("token %d: (%s)\n", i, tokens->items[i]);
+      // printf("token %d: (%s)\n", i, tokens->items[i]);
       char *expanded = expand_argument(tokens->items[i]);
       expanded_tokens[i] = expanded;
     }

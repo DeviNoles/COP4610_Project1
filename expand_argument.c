@@ -46,7 +46,7 @@ char *expand_argument(char *token) {
     char *ptr = strtok(pathString, delim);
 
     while (ptr != NULL) {
-      printf("'%s'\n", ptr);
+      // printf("'%s'\n", ptr);
       ptr = strtok(NULL, delim);
     }
 
