@@ -1,21 +1,12 @@
+// COPY OF MAIN.C WITH MY CHANGES DO NOT THROW AWAY xoxo
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/wait.h>
 
 #include "proj1.h"
 
 int main() {
-  // Create a pipe for stdin and stdout.
-  int term_fds[2];
-  pipe(term_fds);
-
-  // Connect stdin, stdout
-  // dup2(STDIN_FILENO, term_fds[0]);
-  dup2(STDOUT_FILENO, term_fds[1]);
-  close(term_fds[0]);
-  close(term_fds[1]);
-
   while (1) {
     char* PATH = getenv("PATH");
     char* cwd;
@@ -54,34 +45,19 @@ int main() {
     // Just loop through each one, keeping track of the previous item, to know
     // where stdin and out are coming from.
     execution_list *last_node = NULL;
-    pid_t last_pid; // TODO: Set to NULL PID
     while (exec_list) {
       // There are four cases here. Basically, you need to look at last_node to
       // see where input for the current process/file comes from.
       // TODO: If the PROCESS is a builtin, we should call the appropriate
       // function here. Otherwise, it's an external command. Look up the program
       // in the $PATH, and then call execve.
-      execute_list_node(exec_list, last_node, PATH, term_fds);
-
-      // Track the final PID.
-      if (exec_list->type == EXEC_LIST_PROCESS) {
-        // TODO: Ignore background tasks here
-        last_pid = exec_list->pid;
-      }
-
+      execute_list_node(exec_list, last_node, PATH);
       last_node = exec_list;
       exec_list = exec_list->next;
     }
 
     // TODO: Make it so that exec_list always has a PID, and then we call
     // wait(pid)
-    pid_t temp;
-    do {
-      temp = wait(NULL);
-      if (temp != last_pid)
-        break;
-    } while (temp != last_pid);
-    printf("It's died.\n");
 
     // TODO: Cleanup execution list, etc.
     free_execution_list(exec_list);
