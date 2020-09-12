@@ -55,12 +55,14 @@ int main() {
     // where stdin and out are coming from.
     execution_list *last_node = NULL;
     pid_t last_pid; // TODO: Set to NULL PID
-    while (exec_list) {
+    while (exec_list && exec_list != last_node) {
       // There are four cases here. Basically, you need to look at last_node to
       // see where input for the current process/file comes from.
       // TODO: If the PROCESS is a builtin, we should call the appropriate
       // function here. Otherwise, it's an external command. Look up the program
       // in the $PATH, and then call execve.
+      printf("exec_list=%p\n", exec_list);
+      printf("last_node=%p\n", last_node);
       execute_list_node(exec_list, last_node, PATH, term_fds);
 
       // Track the final PID.

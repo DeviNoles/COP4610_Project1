@@ -15,7 +15,7 @@ int is_internal_command(const char *command) {
 void execute_list_node(execution_list *current_node, execution_list *last_node,
                        char *PATH, int *term_fds) {
   // Do work depending on which the nodes are
-  if (current_node->type == EXEC_LIST_PROCESS || 1) {
+  if (current_node->type == EXEC_LIST_PROCESS) {
     string_list *current = current_node->command_and_args;
     // count the length of the string_list
     int len = 0;
