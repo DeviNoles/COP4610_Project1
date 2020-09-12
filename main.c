@@ -59,6 +59,7 @@ int main() {
 
     // Just loop through each one, keeping track of the previous item, to know
     // where stdin and out are coming from.
+    execution_list *first_node = exec_list;
     execution_list *last_node = NULL;
     pid_t last_pid; // TODO: Set to NULL PID
     int has_last_pid = 0;
@@ -115,7 +116,7 @@ int main() {
     }
 
     // TODO: Cleanup execution list, etc.
-    free_execution_list(exec_list);
+    free_execution_list(first_node);
     free(input);
     free_tokens(tokens);
   }
