@@ -2,11 +2,10 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/wait.h>
 #include <unistd.h>
 
 void execute_list_node(execution_list *current_node, execution_list *last_node,
-                       char *PATH) {
+                       char *PATH, int *term_fds) {
   // Do work depending on which the nodes are
   if (current_node->type == EXEC_LIST_PROCESS || 1) {
     string_list *current = current_node->command_and_args;
@@ -44,20 +43,11 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
       if (!exec_path) {
         printf("Command does not exist.\n");
       } else {
+        execution_list *cur = current_node;
+
         pid_t child_pid = fork();
         if (child_pid == 0) {
           // we are in the child process
-
-          // Create a pipe for this process.
-          pipe(current_node->fds);
-
-          // Connect stdin and stdout to the created pipe.
-          // dup2(current_node->fds[0], STDIN_FILENO);
-          // dup2(current_node->fds[1], STDOUT_FILENO);
-          // dup2(STIN_FILENO, current_node->fds[0]);
-          // dup2(STDOUT_FILENO, current_node->fds[1]);
-          // close(current_node->fds[0]);
-          // close(current_node->fds[1]);
 
           // If we need to do any forwarding, then we should do it now.
           // TODO: If there is no next node to forward to, then stdout should
@@ -68,27 +58,34 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
 
           if (last_node) {
             if (last_node->type == EXEC_LIST_PROCESS) {
-              // int result = dup2(last_node->fds[1], current_node->fds[0]);
-              // close(last_node->fds[0]);
-              // printf("dup2 returned %d\n", result);
+              // pipe(cur->stdin_pipe);
+              // dup2(cur->stdin_pipe[0], STDIN_FILENO);
+
+              // Read from previous stdout
+              close(last_node->stdout_pipe[1]);
+              dup2(last_node->stdout_pipe[0], STDIN_FILENO);
+              close(last_node->stdout_pipe[0]);
             } else if (last_node->type == EXEC_LIST_FILE) {
-              // int fd = open(last_node->filename, O_RDONLY);
-              // dup2(fd, current_node->fds[1]);
-              // close(fd);
+              int fd = open(last_node->filename, O_RDONLY);
+              dup2(fd, STDIN_FILENO);
+              close(fd);
             }
           }
+
+          if (cur->next && cur->next->type == EXEC_LIST_PROCESS) {
+            dup2(cur->stdout_pipe[1], STDOUT_FILENO);
+            close(cur->stdout_pipe[1]);
+            // Write to stdout
+          }
+
+          // If there is no next node, then pipe to the terminal.
+          if (!cur->next) {
+            close(term_fds[0]);
+            dup2(term_fds[1], STDOUT_FILENO);
+            close(term_fds[1]);
+          }
+
           execv(exec_path, argv);
-          printf("bruh moment.\n");
-        } else {
-          // We are in the parent process
-          // pid_t temp;
-          // current_node->pid = child_pid;
-          // do {
-          //   temp = wait(NULL);
-          //   if (temp != child_pid)
-          //     break;
-          // } while (temp != child_pid);
-          // printf("It's died.\n");
         }
       }
     }

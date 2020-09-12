@@ -28,7 +28,8 @@ void print_string_list(string_list *list);
 typedef struct _execution_list {
   string_list *command_and_args;
   char *filename;
-  int fds[2];
+  int stdin_pipe[2];
+  int stdout_pipe[2];
   enum { EXEC_LIST_FILE, EXEC_LIST_PROCESS } type;
   pid_t pid;
   struct _execution_list *next;
@@ -39,7 +40,7 @@ void print_execution_list(execution_list *exec_list);
 void free_execution_list(execution_list *exec_list);
 
 void execute_list_node(execution_list *current_node, execution_list *last_node,
-                       char *PATH);
+                       char *PATH, int* term_fds);
 
 char *lookup_executable(char *command, char *PATH);
 
