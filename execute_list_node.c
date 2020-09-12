@@ -7,6 +7,11 @@
 void setup_pipes(execution_list *current_node, execution_list *last_node,
                  int *term_fds);
 
+int is_internal_command(const char *command) {
+  return (!strcmp(command, "cd") || !strcmp(command, "echo") ||
+          !strcmp(command, "jobs") || !strcmp(command, "exit"));
+}
+
 void execute_list_node(execution_list *current_node, execution_list *last_node,
                        char *PATH, int *term_fds) {
   // Do work depending on which the nodes are
@@ -32,35 +37,51 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
     // of starting a process.
 
     // Setup all pipes before doing work
+    // Either do an internal command, or go external
 
-    char *exec_path = lookup_executable(argv[0], PATH);
-    if (!exec_path) {
-      printf("Command does not exist.\n");
+    if (is_internal_command(argv[0])) {
+      // setup_pipes(current_node, last_node, term_fds);
+      execution_list *next = current_node->next;
+      if (next) {
+        if (next->type == EXEC_LIST_PROCESS) {
+          // dup2(current_node->stdout_pipe[1], STDOUT_FILENO);
+          // close(current_node->stdout_pipe[0]);
+          // close(current_node->stdout_pipe[1]);
+          // Write to stdout
+        } else if (next->type == EXEC_LIST_FILE) {
+          int fd = open(next->filename, O_WRONLY | O_CREAT);
+          dup2(fd, current_node->stdout_pipe[1]);
+          close(fd);
+        }
+      } else {
+        current_node->stdout_pipe[1] = STDOUT_FILENO;
+      }
+
+      close(current_node->stdout_pipe[0]);
+      execute_internal_command(argv[0], current_node);
+
+      if (next) {
+        close(current_node->stdout_pipe[1]);
+      }
     } else {
-      pid_t child_pid = fork();
-      if (child_pid == 0) {
-        // we are in the child process
-        setup_pipes(current_node, last_node, term_fds);
-
-        // Either do an internal command, or go external
-        if (!strcmp(argv[0], "cd") || !strcmp(argv[0], "echo") ||
-            !strcmp(argv[0], "jobs") || !strcmp(argv[0], "exit")) {
-          fprintf(stderr, "internal\n");
-          // cd, echo, jobs, exit
-          if (!strcmp(argv[0], "cd")) {
-            execute_internal_command("cd", current_node);
-          } else if (!strcmp(argv[0], "echo")) {
-            execute_internal_command("echo", current_node);
-          } else if (!strcmp(argv[0], "jobs")) {
-            execute_internal_command("jobs", current_node);
-          } else if (!strcmp(argv[0], "exit")) {
-            execute_internal_command("exit", current_node);
-          }
-
-          exit(0);
+      // If it is a file that exists, don't use path.
+      char *exec_path = lookup_executable(argv[0], PATH);
+      if (!exec_path) {
+        if (access(argv[0], F_OK) != -1) {
+          exec_path = argv[0];
         } else {
+          printf("Command does not exist.\n");
+          return;
+        }
+      }
+
+      if (exec_path) {
+        pid_t child_pid = fork();
+        if (child_pid == 0) {
+          // we are in the child process
+          setup_pipes(current_node, last_node, term_fds);
+
           // Execute external commands
-          fprintf(stderr, "extern %s\n", exec_path);
           execv(exec_path, argv);
         }
       }
@@ -97,7 +118,7 @@ void setup_pipes(execution_list *current_node, execution_list *last_node,
       close(current_node->stdout_pipe[1]);
       // Write to stdout
     } else if (current_node->next->type == EXEC_LIST_FILE) {
-      int fd = open(last_node->filename, O_WRONLY | O_CREAT);
+      int fd = open(current_node->next->filename, O_WRONLY | O_CREAT);
       dup2(fd, STDOUT_FILENO);
       close(fd);
     }

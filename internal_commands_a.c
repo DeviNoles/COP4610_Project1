@@ -20,11 +20,18 @@ void internal_cd(execution_list *node) {
 
 void internal_echo(execution_list *node) {
   // printf("CALLING INTERNAL ECHO\n");
-  string_list *current = node->command_and_args;
-  if (node->command_and_args->next) {
-    print_string_list(node->command_and_args->next);
-    printf("\n");
+  string_list *current = node->command_and_args->next;
+  int i = 0;
+  int fd = node->stdout_pipe[1];
+
+  while (current) {
+    if (i++ > 0) {
+      dprintf(fd, " ");
+    }
+    dprintf(fd, "%s", current->value);
+    current = current->next;
   }
+  dprintf(fd, "\n");
 }
 
 void internal_exit(execution_list *node) {}

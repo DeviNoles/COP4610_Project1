@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 #include "proj1.h"
 
@@ -18,10 +19,8 @@ int main() {
 
   while (1) {
     char *PATH = getenv("PATH");
-    // char* cwd =- getenv("PWD");
-    char cwd[_PC_PATH_MAX];
-    printf("%s@%s: %s > ", getenv("USER"), getenv("MACHINE"),
-           getcwd(cwd, _PC_PATH_MAX));
+    char* cwd = getcwd(NULL, 0);
+    printf("%s@%s: %s > ", getenv("USER"), getenv("MACHINE"), cwd);
 
     /* input contains the whole command
      * tokens contains substrings from input split by spaces
@@ -51,7 +50,6 @@ int main() {
     // Once we have the execution_list built, everything else is very easy.
     execution_list *exec_list =
         build_execution_list(expanded_tokens, tokens->size);
-    print_execution_list(exec_list);
 
     // Just loop through each one, keeping track of the previous item, to know
     // where stdin and out are coming from.
@@ -83,7 +81,6 @@ int main() {
       if (temp != last_pid)
         break;
     } while (temp != last_pid);
-    printf("It's died.\n");
 
     // TODO: Cleanup execution list, etc.
     free_execution_list(exec_list);
