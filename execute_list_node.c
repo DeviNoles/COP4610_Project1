@@ -119,14 +119,21 @@ void setup_pipes(execution_list *current_node, execution_list *last_node,
       close(current_node->stdout_pipe[1]);
       // Write to stdout
     } else if (current_node->next->type == EXEC_LIST_FILE) {
-      // Check if the file existed, so that if it did not, we give it 664.
-      int exists = access(current_node->next->filename, F_OK) != -1;
-      int fd = open(current_node->next->filename, O_WRONLY | O_CREAT);
-      if (!exists) {
-        chmod(current_node->next->filename, 0664);
+      // If it's inverted, then use it as stdin
+      if (current_node->next->is_inverted_redirect) {
+        // Check if the file existed, so that if it did not, we give it 664.
+        int exists = access(current_node->next->filename, F_OK) != -1;
+        int fd = open(current_node->next->filename, O_WRONLY | O_CREAT);
+        if (!exists) {
+          chmod(current_node->next->filename, 0664);
+        }
+        dup2(fd, STDOUT_FILENO);
+        close(fd);
+      } else {
+        int fd = open(current_node->next->filename, O_RDONLY);
+        dup2(fd, STDIN_FILENO);
+        close(fd);
       }
-      dup2(fd, STDOUT_FILENO);
-      close(fd);
     }
   } else {
     // If there is no next node, then pipe to the terminal.

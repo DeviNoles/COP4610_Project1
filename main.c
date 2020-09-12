@@ -7,6 +7,9 @@
 #include "proj1.h"
 
 int main() {
+  // Init background jobs
+  background_jobs = NULL;
+
   // Create a pipe for stdin and stdout.
   int term_fds[2];
   pipe(term_fds);
@@ -19,7 +22,7 @@ int main() {
 
   while (1) {
     char *PATH = getenv("PATH");
-    char* cwd = getcwd(NULL, 0);
+    char *cwd = getcwd(NULL, 0);
     printf("%s@%s: %s > ", getenv("USER"), getenv("MACHINE"), cwd);
 
     /* input contains the whole command
@@ -55,6 +58,7 @@ int main() {
     // where stdin and out are coming from.
     execution_list *last_node = NULL;
     pid_t last_pid; // TODO: Set to NULL PID
+    int has_last_pid = 0;
     while (exec_list && exec_list != last_node) {
       // There are four cases here. Basically, you need to look at last_node to
       // see where input for the current process/file comes from.
@@ -65,8 +69,26 @@ int main() {
 
       // Track the final PID.
       if (exec_list->type == EXEC_LIST_PROCESS) {
-        // TODO: Ignore background tasks here
-        last_pid = exec_list->pid;
+        // Ignore background tasks here
+        if (!exec_list->is_background) {
+          last_pid = exec_list->pid;
+          has_last_pid = 1;
+        } else {
+          // Add background
+          execution_list *new_node =
+              (execution_list *)malloc(sizeof(execution_list));
+          *new_node = *exec_list;
+
+          if (!background_jobs) {
+            background_jobs = new_node;
+          } else {
+            execution_list *cur = background_jobs;
+            while (cur->next) {
+              cur = cur->next;
+            }
+            cur->next = new_node;
+          }
+        }
       }
 
       last_node = exec_list;
@@ -75,12 +97,14 @@ int main() {
 
     // TODO: Make it so that exec_list always has a PID, and then we call
     // wait(pid)
-    pid_t temp;
-    do {
-      temp = wait(NULL);
-      if (temp != last_pid)
-        break;
-    } while (temp != last_pid);
+    if (has_last_pid) {
+      pid_t temp;
+      do {
+        temp = wait(NULL);
+        if (temp != last_pid)
+          break;
+      } while (temp != last_pid);
+    }
 
     // TODO: Cleanup execution list, etc.
     free_execution_list(exec_list);

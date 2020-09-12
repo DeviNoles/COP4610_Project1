@@ -8,6 +8,7 @@ execution_list *build_execution_list(char **expanded_tokens, int size) {
   execution_list *first_node = node;
   node->type = EXEC_LIST_PROCESS;
   node->next = NULL;
+  node->is_background = 0;
   node->command_and_args = create_string_list();
   pipe(node->stdout_pipe);
 
@@ -22,6 +23,7 @@ execution_list *build_execution_list(char **expanded_tokens, int size) {
       new_node->type = EXEC_LIST_PROCESS;
       new_node->next = NULL;
       new_node->command_and_args = create_string_list();
+      new_node->is_background = 0;
       node->next = new_node;
       pipe(new_node->stdout_pipe);
       node = new_node;
@@ -30,8 +32,22 @@ execution_list *build_execution_list(char **expanded_tokens, int size) {
           (execution_list *)malloc(sizeof(execution_list));
       new_node->type = EXEC_LIST_FILE;
       new_node->next = NULL;
+      new_node->is_inverted_redirect = 0;
       node->next = new_node;
       node = new_node;
+    } else if (!strcmp(token, "<")) {
+      execution_list *new_node =
+          (execution_list *)malloc(sizeof(execution_list));
+      new_node->type = EXEC_LIST_FILE;
+      new_node->next = NULL;
+      new_node->is_inverted_redirect = 1;
+      node->next = new_node;
+      node = new_node;
+    } else if (!strcmp(token, "&")) {
+      // Mark the current process as background
+      if (node) {
+        node->is_background = 1;
+      }
     } else {
       // If the current node is a file, then set the filename.
       // Otherwise, add the argument to the command list.

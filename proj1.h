@@ -33,7 +33,11 @@ typedef struct _execution_list {
   enum { EXEC_LIST_FILE, EXEC_LIST_PROCESS } type;
   pid_t pid;
   struct _execution_list *next;
+  int is_background;
+  int is_inverted_redirect;
 } execution_list;
+
+execution_list* background_jobs;
 
 execution_list *build_execution_list(char **expanded_tokens, int size);
 void print_execution_list(execution_list *exec_list);
