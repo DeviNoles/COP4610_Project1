@@ -26,6 +26,12 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
       len++;
       current = current->next;
     }
+
+    // If the command is empty, just skip.
+    if (len == 0) return;
+    if (!current_node->command_and_args->value) return;
+    if (strlen(current_node->command_and_args->value) == 0) return;
+
     char **argv = (char **)malloc(len * sizeof(char *));
     // index for argv
     int index = 0;
