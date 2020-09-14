@@ -1,8 +1,8 @@
 #ifndef PROJ1_H
 #define PROJ1_H
 #include <stdio.h>
-#include <unistd.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 typedef struct {
   int size;
@@ -35,22 +35,25 @@ typedef struct _execution_list {
   int stdout_pipe[2];
   enum { EXEC_LIST_FILE, EXEC_LIST_PROCESS } type;
   pid_t pid;
-  struct _execution_list *next;
+  struct _execution_list *prev, *next;
   int is_background;
   int is_inverted_redirect;
   int job_id;
-	int has_completed;
+  int has_completed;
 } execution_list;
 
-extern execution_list* background_jobs;
+extern execution_list *background_jobs;
 extern int total_jobs;
 
 execution_list *build_execution_list(char **expanded_tokens, int size);
 void print_execution_list(execution_list *exec_list);
 void free_execution_list(execution_list *exec_list);
 
+// Prints the entire command line for a (potentially piped process)
+void dprint_full_command(int fd, execution_list *exec_list);
+
 void execute_list_node(execution_list *current_node, execution_list *last_node,
-                       char *PATH, int* term_fds);
+                       char *PATH, int *term_fds);
 
 char *lookup_executable(char *command, char *PATH);
 

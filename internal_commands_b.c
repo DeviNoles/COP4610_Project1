@@ -6,9 +6,9 @@ void internal_jobs(execution_list *node) {
   while (current) {
     if (!current->has_completed) {
       dprintf(fd, "[%d] [%ld] ", current->job_id, (long)current->pid);
-      print_string_list(current->command_and_args);
+      dprint_full_command(fd, current);
+      dprintf(fd, "\n");
     }
     current = current->next;
   }
-  dprintf(fd, "\n");
 }

@@ -112,9 +112,9 @@ int main() {
       if (!job->has_completed) {
         int result = waitpid(job->pid, &status, WNOHANG);
         if (result > 0) {
-          printf("[%d]+ ", job->job_id);
-          print_string_list(job->command_and_args);
-          printf("\n");
+          dprintf(STDOUT_FILENO, "[%d]+ ", job->job_id);
+          dprint_full_command(STDOUT_FILENO, job);
+          dprintf(STDOUT_FILENO, "\n");
           job->has_completed = 1;
         }
       }
@@ -122,9 +122,10 @@ int main() {
     }
 
     // TODO: Cleanup execution list, etc.
-    if (!first_node->is_background) {
-      free_execution_list(first_node);
-    }
+    // If any child is a background node, save the cleanup until later.
+    // if (!first_node->is_background) {
+    //   free_execution_list(first_node);
+    // }
     free(input);
     free_tokens(tokens);
   }
