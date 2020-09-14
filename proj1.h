@@ -2,6 +2,7 @@
 #define PROJ1_H
 #include <stdio.h>
 #include <unistd.h>
+#include <sys/types.h>
 
 typedef struct {
   int size;
