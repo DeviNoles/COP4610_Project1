@@ -1,0 +1,68 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+EXEC_LIST_FILE	proj1.h	/^  enum { EXEC_LIST_FILE, EXEC_LIST_PROCESS } type;$/;"	e	enum:_execution_list::__anon2
+EXEC_LIST_PROCESS	proj1.h	/^  enum { EXEC_LIST_FILE, EXEC_LIST_PROCESS } type;$/;"	e	enum:_execution_list::__anon2
+FILE	pseudo.c	/^    FILE,$/;"	e	enum:__anon5::__anon6	file:
+PROCESS	pseudo.c	/^    PROCESS$/;"	e	enum:__anon5::__anon6	file:
+PROJ1_H	proj1.h	2;"	d
+_execution_list	proj1.h	/^typedef struct _execution_list {$/;"	s
+_string_list	proj1.h	/^typedef struct _string_list {$/;"	s
+add_token	parser.c	/^void add_token(tokenlist *tokens, char *item) {$/;"	f
+background_jobs	main.c	/^execution_list *background_jobs;$/;"	v
+build_execution_list	build_execution_list.c	/^execution_list *build_execution_list(char **expanded_tokens, int size) {$/;"	f
+command_and_args	proj1.h	/^  string_list *command_and_args;$/;"	m	struct:_execution_list
+command_and_args	pseudo.c	/^  char** command_and_args;$/;"	m	struct:__anon5	file:
+create_string_list	string_list.c	/^string_list *create_string_list() {$/;"	f
+dprint_full_command	build_execution_list.c	/^void dprint_full_command(int fd, execution_list *node) {$/;"	f
+dprint_string_list	string_list.c	/^void dprint_string_list(int fd, string_list *list) {$/;"	f
+execute_internal_command	execute_internal_command.c	/^void execute_internal_command(const char *command, execution_list *node) {$/;"	f
+execute_list_node	execute_list_node.c	/^void execute_list_node(execution_list *current_node, execution_list *last_node,$/;"	f
+execution_list	proj1.h	/^} execution_list;$/;"	t	typeref:struct:_execution_list
+execution_list	pseudo.c	/^} execution_list;$/;"	t	typeref:struct:__anon5	file:
+expand_argument	expand_argument.c	/^char *expand_argument(char *token) {$/;"	f
+filename	proj1.h	/^  char *filename;$/;"	m	struct:_execution_list
+filename	pseudo.c	/^  char* filename;$/;"	m	struct:__anon5	file:
+free_execution_list	build_execution_list.c	/^void free_execution_list(execution_list *exec_list) {$/;"	f
+free_string_list	string_list.c	/^void free_string_list(string_list *list) {$/;"	f
+free_tokens	parser.c	/^void free_tokens(tokenlist *tokens) {$/;"	f
+get_input	parser.c	/^char *get_input(void) {$/;"	f
+get_tokens	parser.c	/^tokenlist *get_tokens(char *input) {$/;"	f
+has_completed	proj1.h	/^  int has_completed;$/;"	m	struct:_execution_list
+headers	makefile	/^headers = proj1.h$/;"	m
+input	pseudo.c	/^  FILE* input, *output;$/;"	m	struct:__anon5	file:
+internal_cd	internal_commands_a.c	/^void internal_cd(execution_list *node) {$/;"	f
+internal_echo	internal_commands_a.c	/^void internal_echo(execution_list *node) {$/;"	f
+internal_exit	internal_commands_a.c	/^void internal_exit(execution_list *node) {$/;"	f
+internal_jobs	internal_commands_b.c	/^void internal_jobs(execution_list *node) {$/;"	f
+is_background	proj1.h	/^  int is_background;$/;"	m	struct:_execution_list
+is_internal_command	execute_list_node.c	/^int is_internal_command(const char *command) {$/;"	f
+is_inverted_redirect	proj1.h	/^  int is_inverted_redirect;$/;"	m	struct:_execution_list
+items	proj1.h	/^  char **items;$/;"	m	struct:__anon1
+job_id	proj1.h	/^  int job_id;$/;"	m	struct:_execution_list
+lookup_executable	lookup_executable.c	/^char *lookup_executable(char *command, char *PATH) {$/;"	f
+main	main.c	/^int main() {$/;"	f
+main	pseudo.c	/^int main() {$/;"	f
+new_tokenlist	parser.c	/^tokenlist *new_tokenlist(void) {$/;"	f
+next	proj1.h	/^  struct _execution_list *prev, *next;$/;"	m	struct:_execution_list	typeref:struct:_execution_list::
+next	proj1.h	/^  struct _string_list *next;$/;"	m	struct:_string_list	typeref:struct:_string_list::_string_list
+objects	makefile	/^objects = main.o parser.o expand_argument.o build_execution_list.o string_list.o \\$/;"	m
+output	pseudo.c	/^  FILE* input, *output;$/;"	m	struct:__anon5	file:
+pid	proj1.h	/^  pid_t pid;$/;"	m	struct:_execution_list
+prev	proj1.h	/^  struct _execution_list *prev, *next;$/;"	m	struct:_execution_list	typeref:struct:_execution_list::_execution_list
+print_execution_list	build_execution_list.c	/^void print_execution_list(execution_list *exec_list) {$/;"	f
+print_string_list	string_list.c	/^void print_string_list(string_list *list) {$/;"	f
+setup_pipes	execute_list_node.c	/^void setup_pipes(execution_list *current_node, execution_list *last_node,$/;"	f
+size	proj1.h	/^  int size;$/;"	m	struct:__anon1
+stdin_pipe	proj1.h	/^  int stdin_pipe[2];$/;"	m	struct:_execution_list
+stdout_pipe	proj1.h	/^  int stdout_pipe[2];$/;"	m	struct:_execution_list
+string_list	proj1.h	/^} string_list;$/;"	t	typeref:struct:_string_list
+string_list_add	string_list.c	/^void string_list_add(string_list *list, char *str) {$/;"	f
+tokenlist	proj1.h	/^} tokenlist;$/;"	t	typeref:struct:__anon1
+total_jobs	main.c	/^int total_jobs;$/;"	v
+type	proj1.h	/^  enum { EXEC_LIST_FILE, EXEC_LIST_PROCESS } type;$/;"	m	struct:_execution_list	typeref:enum:_execution_list::__anon2
+type	pseudo.c	/^  } type;$/;"	m	struct:__anon5	typeref:enum:__anon5::__anon6	file:
+value	proj1.h	/^  char *value;$/;"	m	struct:_string_list

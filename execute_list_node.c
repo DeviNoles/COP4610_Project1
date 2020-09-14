@@ -184,6 +184,15 @@ void setup_pipes(execution_list *current_node, execution_list *last_node,
         }
         file_node = file_node->next;
       }
+
+      // If a process comes after this, then we need to do two things:
+      // 1. Setup pipes, of course.
+      // 2. Change the ->next to the process in question.
+      // Both can be knocked out easily.
+      if (file_node && file_node->type == EXEC_LIST_PROCESS) {
+        current_node->next = file_node;
+        file_node->prev = current_node;
+      }
     }
   } else {
     // If there is no next node, then pipe to the terminal.

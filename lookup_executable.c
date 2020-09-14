@@ -19,18 +19,20 @@ char *lookup_executable(char *command, char *PATH) {
   char *path = strdup(PATH);
   if (!path) {
     return command;
-  } 
+  }
   // Split the PATH by :
-  char *saveptr;
-  char *directory_path = strtok_r(path, ":", &saveptr);
+  char *saveptr = path;
+  char *directory_path;
 
-  while (directory_path) {
+  // while (directory_path) {
+  for (char *directory_path = strtok_r(path, ":", &saveptr);
+       directory_path != NULL; directory_path = strtok_r(NULL, ":", &saveptr)) {
     // List the directory to try to find a file.
     DIR *dir;
     dir = opendir(directory_path);
 
     if (!dir) {
-      directory_path = strtok_r(path, ":", &saveptr);
+      // directory_path = strtok_r(path, ":", &saveptr);
       continue; // Dir does not exist
     }
 
@@ -64,8 +66,6 @@ char *lookup_executable(char *command, char *PATH) {
         }
       }
     }
-
-    directory_path = strtok_r(NULL, ":", &saveptr);
   }
 
   // If we didn't find it, just return NULL.
