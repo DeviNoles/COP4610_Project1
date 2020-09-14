@@ -37,7 +37,7 @@ int main() {
     while (exec_list) {
       // There are four cases here. Basically, you need to look at last_node to see where
       // input for the current process/file comes from.
-      // TODO: If the PROCESS is a builtin, we should call the appropriate function here.
+      // If the PROCESS is a builtin, we should call the appropriate function here.
       // Otherwise, it's an external command. Look up the program in the $PATH, and then call execve.
       last_node = exec_list;
       exec_list = exec_list->next;

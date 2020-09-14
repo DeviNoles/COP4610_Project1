@@ -11,10 +11,10 @@
 
 #include "proj1.h"
 
-// TODO: If there is a tilde in a path, you must expand that first
-// TODO: Maybe give a warning if the program is not a file (i.e. it's a
+// If there is a tilde in a path, you must expand that first
+// Maybe give a warning if the program is not a file (i.e. it's a
 // directory)
-// TODO: Should we resolve symlinks?
+// Should we resolve symlinks?
 char *lookup_executable(char *command, char *PATH) {
   char *path = strdup(PATH);
   if (!path) {
@@ -64,6 +64,9 @@ char *lookup_executable(char *command, char *PATH) {
           } else {
             return NULL;
           }
+        } else {
+          fprintf(stderr, "%s: not a file\n", command);
+          return NULL;
         }
       }
     }

@@ -73,7 +73,7 @@ int main() {
     while (exec_list && exec_list != last_node) {
       // There are four cases here. Basically, you need to look at last_node to
       // see where input for the current process/file comes from.
-      // TODO: If the PROCESS is a builtin, we should call the appropriate
+      // If the PROCESS is a builtin, we should call the appropriate
       // function here. Otherwise, it's an external command. Look up the program
       // in the $PATH, and then call execve.
       execute_list_node(exec_list, last_node, PATH, term_fds);
@@ -107,7 +107,7 @@ int main() {
     }
 
     // Wait for jobs
-    // TODO: Be able to print the entire command (i.e. CMD | CMD2)
+    // Be able to print the entire command (i.e. CMD | CMD2)
     execution_list *job = background_jobs;
     while (job) {
       int status;
@@ -123,11 +123,21 @@ int main() {
       job = job->next;
     }
 
-    // TODO: Cleanup execution list, etc.
+    // Cleanup execution list, etc.
     // If any child is a background node, save the cleanup until later.
-    // if (!first_node->is_background) {
-    //   free_execution_list(first_node);
-    // }
+    int found_background = 0;
+    execution_list *current = first_node;
+    while (current) {
+      if (current->is_background) {
+        found_background = 1;
+        break;
+      }
+      current = current->next;
+    }
+
+    if (!found_background) {
+      free_execution_list(first_node);
+    }
     free(input);
     free_tokens(tokens);
   }

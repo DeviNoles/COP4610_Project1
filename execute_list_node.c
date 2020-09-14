@@ -46,7 +46,7 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
     }
 
     // at this point, argv contains the necessary process stuff
-    // TODO: If lookup_executable returns NULL, report an error instead
+    // If lookup_executable returns NULL, report an error instead
     // of starting a process.
 
     // Setup all pipes before doing work
@@ -148,10 +148,10 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
 void setup_pipes(execution_list *current_node, execution_list *last_node,
                  int *term_fds) {
   // If we need to do any forwarding, then we should do it now.
-  // TODO: If there is no next node to forward to, then stdout should
+  // If there is no next node to forward to, then stdout should
   // print to the terminal.
   //
-  // TODO: Like wise, if there is no previous node, then stdin should be
+  // Like wise, if there is no previous node, then stdin should be
   // stdin from the terminal itself.
 
   if (last_node) {
