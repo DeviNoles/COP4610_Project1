@@ -1,4 +1,4 @@
-CFLAGS += -g
+CFLAGS += -g -std=c99
 
 headers = proj1.h
 objects = main.o parser.o expand_argument.o build_execution_list.o string_list.o \
