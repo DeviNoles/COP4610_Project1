@@ -28,7 +28,14 @@ int main() {
   while (1) {
     char *PATH = getenv("PATH");
     char *cwd = getcwd(NULL, 0);
-    printf("%s@%s: %s > ", getenv("USER"), getenv("MACHINE"), cwd);
+    char *machine = getenv("MACHINE");
+    if (!machine) {
+      machine = getenv("HOSTNAME");
+    }
+    if (!machine) {
+      machine = "(unknown machine)";
+    }
+    printf("%s@%s: %s > ", getenv("USER"), machine, cwd);
 
     /* input contains the whole command
      * tokens contains substrings from input split by spaces
