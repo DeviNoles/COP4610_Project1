@@ -76,6 +76,7 @@ int main() {
             (execution_list *)malloc(sizeof(execution_list));
         *new_node = *exec_list;
         new_node->job_id = (job_count++) + 1;
+        new_node->has_completed = 0;
 
         if (!background_jobs) {
           background_jobs = new_node;
@@ -96,8 +97,27 @@ int main() {
       exec_list = exec_list->next;
     }
 
+    // Wait for jobs
+    // TODO: Be able to print the entire command (i.e. CMD | CMD2)
+    execution_list *job = background_jobs;
+    while (job) {
+      int status;
+      if (!job->has_completed) {
+        int result = waitpid(job->pid, &status, WNOHANG);
+        if (result > 0) {
+          printf("[%d]+ ", job->job_id);
+          print_string_list(job->command_and_args);
+          printf("\n");
+          job->has_completed = 1;
+        }
+      }
+      job = job->next;
+    }
+
     // TODO: Cleanup execution list, etc.
-    free_execution_list(first_node);
+    if (!first_node->is_background) {
+      free_execution_list(first_node);
+    }
     free(input);
     free_tokens(tokens);
   }

@@ -62,7 +62,7 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
         } else if (next->type == EXEC_LIST_FILE) {
           if (!next->is_inverted_redirect) {
             int exists = access(current_node->next->filename, F_OK) != -1;
-            int fd = open(next->filename, O_WRONLY | O_CREAT);
+            int fd = open(next->filename, O_RDWR | O_CREAT | O_TRUNC);
             if (!exists) {
               chmod(current_node->next->filename, 0664);
             }
@@ -117,7 +117,8 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
           if (!current_node->is_background) {
             if (!current_node->next ||
                 current_node->next->type != EXEC_LIST_PROCESS) {
-              waitpid(child_pid, NULL, 0);
+              int status;
+              waitpid(child_pid, &status, 0);
             }
           }
         }
@@ -159,7 +160,7 @@ void setup_pipes(execution_list *current_node, execution_list *last_node,
       if (!current_node->next->is_inverted_redirect) {
         // Check if the file existed, so that if it did not, we give it 664.
         int exists = access(current_node->next->filename, F_OK) != -1;
-        int fd = open(current_node->next->filename, O_WRONLY | O_CREAT);
+        int fd = open(current_node->next->filename, O_RDWR | O_CREAT | O_TRUNC);
         if (!exists) {
           chmod(current_node->next->filename, 0664);
         }

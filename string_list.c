@@ -24,12 +24,16 @@ void string_list_add(string_list *list, char *str) {
 }
 
 void print_string_list(string_list *list) {
+  dprint_string_list(STDOUT_FILENO, list);
+}
+
+void dprint_string_list(int fd, string_list *list) {
   if (!list || !list->value)
     return;
-  printf("%s", list->value);
+  dprintf(fd, "%s", list->value);
   if (list->next) {
-    printf(" ");
-    print_string_list(list->next);
+    dprintf(fd, " ");
+    dprint_string_list(fd, list->next);
   }
 }
 

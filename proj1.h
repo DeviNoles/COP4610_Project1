@@ -25,6 +25,7 @@ typedef struct _string_list {
 string_list *create_string_list();
 void string_list_add(string_list *list, char *str);
 void print_string_list(string_list *list);
+void dprint_string_list(int fd, string_list *list);
 void free_string_list(string_list *list);
 
 typedef struct _execution_list {
@@ -38,6 +39,7 @@ typedef struct _execution_list {
   int is_background;
   int is_inverted_redirect;
   int job_id;
+	int has_completed;
 } execution_list;
 
 extern execution_list* background_jobs;
