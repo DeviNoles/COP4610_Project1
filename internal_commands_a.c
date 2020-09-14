@@ -45,6 +45,8 @@ void internal_exit(execution_list *node) {
     job = job->next;
   }
 
+  printf("Commands executed: %d\n", total_jobs);
+
   // Release all job memory
   free_execution_list(background_jobs);
 

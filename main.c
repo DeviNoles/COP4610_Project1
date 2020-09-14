@@ -7,11 +7,13 @@
 #include "proj1.h"
 
 execution_list *background_jobs;
+int total_jobs;
 
 int main() {
   // Init background jobs
   int job_count = 0;
   background_jobs = NULL;
+  total_jobs = 0;
 
   // Create a pipe for stdin and stdout.
   int term_fds[2];
@@ -68,6 +70,11 @@ int main() {
       // function here. Otherwise, it's an external command. Look up the program
       // in the $PATH, and then call execve.
       execute_list_node(exec_list, last_node, PATH, term_fds);
+
+      // Increment total_jobs
+      if (exec_list->type == EXEC_LIST_PROCESS) {
+        total_jobs++;
+      }
 
       // Ignore background tasks here
       if (exec_list->type == EXEC_LIST_PROCESS && exec_list->is_background) {

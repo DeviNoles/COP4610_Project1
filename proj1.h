@@ -43,6 +43,7 @@ typedef struct _execution_list {
 } execution_list;
 
 extern execution_list* background_jobs;
+extern int total_jobs;
 
 execution_list *build_execution_list(char **expanded_tokens, int size);
 void print_execution_list(execution_list *exec_list);
