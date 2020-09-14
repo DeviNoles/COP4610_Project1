@@ -111,7 +111,7 @@ int main() {
     execution_list *job = background_jobs;
     while (job) {
       int status;
-      if (!job->has_completed) {
+      if (!job->has_completed && job->pid != 0) {
         int result = waitpid(job->pid, &status, WNOHANG);
         if (result > 0) {
           dprintf(STDOUT_FILENO, "[%d]+ ", job->job_id);

@@ -93,12 +93,21 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
         close(current_node->stdout_pipe[1]);
       }
     } else {
-      // If it is a file that exists, don't use path.
-      char *exec_path = lookup_executable(argv[0], PATH);
-      if (!exec_path) {
+      // If the command has a /, treat it like a file.
+      char *exec_path = NULL;
+      if (strstr(argv[0], "/") != NULL) {
         if (access(argv[0], F_OK) != -1) {
           exec_path = argv[0];
         } else {
+          printf("Command does not exist.\n");
+          return;
+        }
+      }
+
+      // If it is a file that exists, don't use path.
+      else {
+        exec_path = lookup_executable(argv[0], PATH);
+        if (!exec_path) {
           printf("Command does not exist.\n");
           return;
         }

@@ -4,7 +4,7 @@ void internal_jobs(execution_list *node) {
   execution_list *current = background_jobs;
   int fd = node->stdout_pipe[1];
   while (current) {
-    if (!current->has_completed) {
+    if (!current->has_completed && current->pid != 0) {
       dprintf(fd, "[%d] [%ld] ", current->job_id, (long)current->pid);
       dprint_full_command(fd, current);
       dprintf(fd, "\n");

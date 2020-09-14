@@ -66,7 +66,7 @@ void internal_exit(execution_list *node) {
   execution_list *job = background_jobs;
   while (job) {
     int status;
-    if (!job->has_completed) {
+    if (!job->has_completed && job->pid != 0) {
       waitpid(job->pid, &status, 0);
     }
     job = job->next;
