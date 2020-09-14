@@ -110,15 +110,18 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
           // Execute external commands
           execv(exec_path, argv);
         } else {
+          // We are in the parent process
           current_node->pid = child_pid;
 
           // Wait for the process to exit, if it is not being piped into
           // anything, or it is not a background process.
           if (!current_node->is_background) {
-            if (!current_node->next ||
-                current_node->next->type != EXEC_LIST_PROCESS) {
-              int status;
-              waitpid(child_pid, &status, 0);
+            int status;
+            waitpid(child_pid, &status, 0);
+
+            if (current_node->next &&
+                current_node->next->type == EXEC_LIST_PROCESS) {
+              close(current_node->stdout_pipe[1]);
             }
           }
         }
