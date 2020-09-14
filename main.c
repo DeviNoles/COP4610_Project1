@@ -71,11 +71,6 @@ int main() {
       // in the $PATH, and then call execve.
       execute_list_node(exec_list, last_node, PATH, term_fds);
 
-      // Increment total_jobs
-      if (exec_list->type == EXEC_LIST_PROCESS) {
-        total_jobs++;
-      }
-
       // Ignore background tasks here
       if (exec_list->type == EXEC_LIST_PROCESS && exec_list->is_background) {
         // Add background

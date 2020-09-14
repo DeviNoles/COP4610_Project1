@@ -55,6 +55,9 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
     if (is_internal_command(argv[0])) {
       execution_list *next = current_node->next;
       current_node->pid = 0;
+      // Increment total jobs
+      total_jobs++;
+
       if (next) {
         if (next->type == EXEC_LIST_PROCESS) {
           // close(current_node->stdout_pipe[0]);
@@ -102,6 +105,9 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
       }
 
       if (exec_path) {
+        // Increment total jobs
+        total_jobs++;
+
         pid_t child_pid = fork();
         if (child_pid == 0) {
           // we are in the child process
@@ -159,20 +165,24 @@ void setup_pipes(execution_list *current_node, execution_list *last_node,
       close(current_node->stdout_pipe[1]);
       // Write to stdout
     } else if (current_node->next->type == EXEC_LIST_FILE) {
-      // If it's inverted, then use it as stdin
-      if (!current_node->next->is_inverted_redirect) {
-        // Check if the file existed, so that if it did not, we give it 664.
-        int exists = access(current_node->next->filename, F_OK) != -1;
-        int fd = open(current_node->next->filename, O_RDWR | O_CREAT | O_TRUNC);
-        if (!exists) {
-          chmod(current_node->next->filename, 0664);
+      execution_list *file_node = current_node->next;
+      while (file_node && file_node->type == EXEC_LIST_FILE) {
+        // If it's inverted, then use it as stdin
+        if (!file_node->is_inverted_redirect) {
+          // Check if the file existed, so that if it did not, we give it 664.
+          int exists = access(file_node->filename, F_OK) != -1;
+          int fd = open(file_node->filename, O_RDWR | O_CREAT | O_TRUNC);
+          if (!exists) {
+            chmod(file_node->filename, 0664);
+          }
+          dup2(fd, STDOUT_FILENO);
+          close(fd);
+        } else {
+          int fd = open(file_node->filename, O_RDONLY);
+          dup2(fd, STDIN_FILENO);
+          close(fd);
         }
-        dup2(fd, STDOUT_FILENO);
-        close(fd);
-      } else {
-        int fd = open(current_node->next->filename, O_RDONLY);
-        dup2(fd, STDIN_FILENO);
-        close(fd);
+        file_node = file_node->next;
       }
     }
   } else {
