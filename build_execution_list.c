@@ -83,8 +83,8 @@ void free_execution_list(execution_list *exec_list) {
     close(exec_list->stdout_pipe[0]);
     close(exec_list->stdout_pipe[1]);
     free_string_list(exec_list->command_and_args);
-  }
-  else
+  } else {
     free(exec_list->filename);
+  }
   free(exec_list);
 }

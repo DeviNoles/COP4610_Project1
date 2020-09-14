@@ -6,7 +6,7 @@
 
 #include "proj1.h"
 
-execution_list* background_jobs;
+execution_list *background_jobs;
 
 int main() {
   // Init background jobs
@@ -75,8 +75,10 @@ int main() {
       if (exec_list->type == EXEC_LIST_PROCESS) {
         // Ignore background tasks here
         if (!exec_list->is_background) {
-          last_pid = exec_list->pid;
-          has_last_pid = 1;
+          if (exec_list->pid != 0) {
+            last_pid = exec_list->pid;
+            has_last_pid = 1;
+          }
         } else {
           // Add background
           execution_list *new_node =

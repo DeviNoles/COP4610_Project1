@@ -13,9 +13,8 @@ void internal_cd(execution_list *node) {
     return;
   }
   char *temp = node->command_and_args->next->value;
-  printf("CHANGING DIRECTORIES: %s\n", temp);
   if (chdir(temp) == -1) {
-    printf("%s is not a directory.\n", temp);
+    fprintf(stderr, "%s is not a directory.\n", temp);
   }
 }
 

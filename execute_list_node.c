@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-extern execution_list* background_jobs;
+extern execution_list *background_jobs;
 
 void setup_pipes(execution_list *current_node, execution_list *last_node,
                  int *term_fds);
@@ -28,9 +28,12 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
     }
 
     // If the command is empty, just skip.
-    if (len == 0) return;
-    if (!current_node->command_and_args->value) return;
-    if (strlen(current_node->command_and_args->value) == 0) return;
+    if (len == 0)
+      return;
+    if (!current_node->command_and_args->value)
+      return;
+    if (strlen(current_node->command_and_args->value) == 0)
+      return;
 
     char **argv = (char **)malloc(len * sizeof(char *));
     // index for argv
@@ -51,23 +54,39 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
     if (is_internal_command(argv[0])) {
       // setup_pipes(current_node, last_node, term_fds);
       execution_list *next = current_node->next;
+      current_node->pid = 0;
       if (next) {
         if (next->type == EXEC_LIST_PROCESS) {
           // dup2(current_node->stdout_pipe[1], STDOUT_FILENO);
-          // close(current_node->stdout_pipe[0]);
+          close(current_node->stdout_pipe[0]);
           // close(current_node->stdout_pipe[1]);
           // Write to stdout
         } else if (next->type == EXEC_LIST_FILE) {
-          int fd = open(next->filename, O_WRONLY | O_CREAT);
-          dup2(fd, current_node->stdout_pipe[1]);
-          close(fd);
+          if (!next->is_inverted_redirect) {
+            int exists = access(current_node->next->filename, F_OK) != -1;
+            int fd = open(next->filename, O_WRONLY | O_CREAT);
+            if (!exists) {
+              chmod(current_node->next->filename, 0664);
+            }
+            dup2(fd, current_node->stdout_pipe[1]);
+            close(fd);
+          } else {
+            int fd = open(current_node->next->filename, O_RDONLY);
+            dup2(fd, current_node->stdout_pipe[0]);
+            close(fd);
+          }
         }
       } else {
-        current_node->stdout_pipe[1] = STDOUT_FILENO;
+        // current_node->stdout_pipe[1] = STDOUT_FILENO;
+        dup2(STDOUT_FILENO, current_node->stdout_pipe[1]);
       }
 
-      close(current_node->stdout_pipe[0]);
+      // if (!strcmp(argv[0], "echo")) {
+      //   current_node->stdout_pipe[1] = STDOUT_FILENO;
+      // }
+
       execute_internal_command(argv[0], current_node);
+      close(current_node->stdout_pipe[0]);
 
       if (next) {
         close(current_node->stdout_pipe[1]);
@@ -130,7 +149,7 @@ void setup_pipes(execution_list *current_node, execution_list *last_node,
       // Write to stdout
     } else if (current_node->next->type == EXEC_LIST_FILE) {
       // If it's inverted, then use it as stdin
-      if (current_node->next->is_inverted_redirect) {
+      if (!current_node->next->is_inverted_redirect) {
         // Check if the file existed, so that if it did not, we give it 664.
         int exists = access(current_node->next->filename, F_OK) != -1;
         int fd = open(current_node->next->filename, O_WRONLY | O_CREAT);
