@@ -61,8 +61,6 @@ int main() {
     // where stdin and out are coming from.
     execution_list *first_node = exec_list;
     execution_list *last_node = NULL;
-    pid_t last_pid; // TODO: Set to NULL PID
-    int has_last_pid = 0;
     while (exec_list && exec_list != last_node) {
       // There are four cases here. Basically, you need to look at last_node to
       // see where input for the current process/file comes from.
@@ -71,50 +69,31 @@ int main() {
       // in the $PATH, and then call execve.
       execute_list_node(exec_list, last_node, PATH, term_fds);
 
-      // Track the final PID.
-      if (exec_list->type == EXEC_LIST_PROCESS) {
-        // Ignore background tasks here
-        if (!exec_list->is_background) {
-          if (exec_list->pid != 0) {
-            last_pid = exec_list->pid;
-            has_last_pid = 1;
-          }
+      // Ignore background tasks here
+      if (exec_list->type == EXEC_LIST_PROCESS && exec_list->is_background) {
+        // Add background
+        execution_list *new_node =
+            (execution_list *)malloc(sizeof(execution_list));
+        *new_node = *exec_list;
+        new_node->job_id = (job_count++) + 1;
+
+        if (!background_jobs) {
+          background_jobs = new_node;
         } else {
-          // Add background
-          execution_list *new_node =
-              (execution_list *)malloc(sizeof(execution_list));
-          *new_node = *exec_list;
-          new_node->job_id = (job_count++) + 1;
-
-          if (!background_jobs) {
-            background_jobs = new_node;
-          } else {
-            execution_list *cur = background_jobs;
-            while (cur->next) {
-              cur = cur->next;
-            }
-            cur->next = new_node;
+          execution_list *cur = background_jobs;
+          while (cur->next) {
+            cur = cur->next;
           }
-
-          // Print background task
-          // [Job number] [CMD’s PID]
-          printf("[%d] %ld\n", new_node->job_id, (long)exec_list->pid);
+          cur->next = new_node;
         }
+
+        // Print background task
+        // [Job number] [CMD’s PID]
+        printf("[%d] %ld\n", new_node->job_id, (long)exec_list->pid);
       }
 
       last_node = exec_list;
       exec_list = exec_list->next;
-    }
-
-    // TODO: Make it so that exec_list always has a PID, and then we call
-    // wait(pid)
-    if (has_last_pid) {
-      pid_t temp;
-      do {
-        temp = wait(NULL);
-        if (temp != last_pid)
-          break;
-      } while (temp != last_pid);
     }
 
     // TODO: Cleanup execution list, etc.

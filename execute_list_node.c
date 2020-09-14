@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 extern execution_list *background_jobs;
@@ -52,15 +53,12 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
     // Either do an internal command, or go external
 
     if (is_internal_command(argv[0])) {
-      // setup_pipes(current_node, last_node, term_fds);
       execution_list *next = current_node->next;
       current_node->pid = 0;
       if (next) {
         if (next->type == EXEC_LIST_PROCESS) {
-          // dup2(current_node->stdout_pipe[1], STDOUT_FILENO);
-          close(current_node->stdout_pipe[0]);
+          // close(current_node->stdout_pipe[0]);
           // close(current_node->stdout_pipe[1]);
-          // Write to stdout
         } else if (next->type == EXEC_LIST_FILE) {
           if (!next->is_inverted_redirect) {
             int exists = access(current_node->next->filename, F_OK) != -1;
@@ -86,7 +84,7 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
       // }
 
       execute_internal_command(argv[0], current_node);
-      close(current_node->stdout_pipe[0]);
+      // close(current_node->stdout_pipe[0]);
 
       if (next) {
         close(current_node->stdout_pipe[1]);
@@ -113,6 +111,15 @@ void execute_list_node(execution_list *current_node, execution_list *last_node,
           execv(exec_path, argv);
         } else {
           current_node->pid = child_pid;
+
+          // Wait for the process to exit, if it is not being piped into
+          // anything, or it is not a background process.
+          if (!current_node->is_background) {
+            if (!current_node->next ||
+                current_node->next->type != EXEC_LIST_PROCESS) {
+              waitpid(child_pid, NULL, 0);
+            }
+          }
         }
       }
     }
