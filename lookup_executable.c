@@ -43,7 +43,8 @@ char *lookup_executable(char *command, char *PATH) {
       // printf("Entry: %s\n", entry->d_name);
 
       if (!strcmp(entry->d_name, command)) {
-        if (entry->d_type == DT_REG) {
+        // Execute files or symlinks
+        if (entry->d_type == DT_REG || entry->d_type == DT_LNK) {
           // It's a file, return it.
           // Use realpath to find the absolute path of the directory.
           // Then, concat it with the command to get the absolute file path.

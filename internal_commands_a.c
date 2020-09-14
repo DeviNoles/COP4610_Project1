@@ -1,20 +1,47 @@
 #include "proj1.h"
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 void internal_cd(execution_list *node) {
+  // Throw an error if there is more than one argument.
+  string_list *cur = node->command_and_args->next;
+  if (cur && cur->next) {
+    fprintf(stderr, "cd takes only one argument at max.\n");
+    return;
+  }
+
+  // cd $HOME if zero arguments.
   if (node->command_and_args->next == NULL) {
     chdir(getenv("HOME"));
     return;
   } else if (strcmp(node->command_and_args->next->value, "~") == 0) {
+    // Support ~
     chdir(getenv("HOME"));
     return;
   }
-  char *temp = node->command_and_args->next->value;
-  if (chdir(temp) == -1) {
-    fprintf(stderr, "%s is not a directory.\n", temp);
+
+  char *path = node->command_and_args->next->value;
+  struct stat st;
+  int result = stat(path, &st);
+
+  // Check if it exists.
+  if (result == -1 && errno == ENOENT) {
+    fprintf(stderr, "%s: no such file or directory\n", path);
+    return;
+  }
+
+  // If it's not a directory, we can't cd.
+  if (!S_ISDIR(st.st_mode)) {
+    fprintf(stderr, "%s is not a directory.\n", path);
+    return;
+  }
+
+  if (chdir(path) == -1) {
+    fprintf(stderr, "Failed to chdir() into %s\n", path);
   }
 }
 
