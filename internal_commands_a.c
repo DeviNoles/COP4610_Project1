@@ -35,7 +35,7 @@ void internal_echo(execution_list *node) {
 }
 
 void internal_exit(execution_list *node) {
-  // TODO: Wait for jobs
+  // Wait for jobs
   execution_list *job = background_jobs;
   while (job) {
     int status;
